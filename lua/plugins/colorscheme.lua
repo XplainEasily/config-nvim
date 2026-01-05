@@ -1,5 +1,8 @@
 return {
-  { "ellisonleao/gruvbox.nvim" },
+  { "ellisonleao/gruvbox.nvim", priority = 1000, config = true },
+  {
+    "rebelot/kanagawa.nvim",
+  },
 
   {
     "LazyVim/LazyVim",
@@ -22,6 +25,12 @@ return {
     "LazyVim/LazyVim",
     opts = {
       colorscheme = "dracula",
+    },
+  },
+  {
+    "LazyVim/LazyVim",
+    opts = {
+      colorscheme = "kanagawa-lotus",
     },
   },
 }
