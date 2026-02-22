@@ -1,4 +1,12 @@
 return {
+  {
+  "folke/zen-mode.nvim",
+  keys = {
+    { "<leader>z", "<cmd>ZenMode<CR>", desc = "Zen Mode" },
+  },
+  opts = {},
+},
+  {
   "folke/trouble.nvim",
   opts = {}, -- for default options, refer to the configuration section for custom setup.
   cmd = "Trouble",
@@ -34,4 +42,5 @@ return {
       desc = "Quickfix List (Trouble)",
     },
   },
+},
 }
