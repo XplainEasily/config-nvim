@@ -11,6 +11,10 @@ return {
           ignored = true,
           exclude = { ".git" },
         },
+        projects = {
+          dev = { "~/emeria" },
+          recent = false,
+        },
       },
     },
   },
