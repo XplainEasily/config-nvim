@@ -1,3 +1,9 @@
+local secondbrain_path = vim.fn.expand("~/SecondBrain")
+
+local function in_secondbrain(bufnr)
+  return vim.startswith(vim.api.nvim_buf_get_name(bufnr or 0), secondbrain_path)
+end
+
 local function biome_lsp_or_prettier(bufnr)
   local has_biome_lsp = vim.lsp.get_clients({
     bufnr = bufnr,
@@ -25,11 +31,22 @@ local function biome_lsp_or_prettier(bufnr)
   return { "biome" }
 end
 
+local oxfmt_config = vim.fn.expand("~/SecondBrain/.oxfmtrc.json")
+
 return {
   -- Use Biome for most files, ESLint for JSX/TSX
+  -- In SecondBrain vault: oxfmt for markdown/sh, oxlint for linting
   {
     "stevearc/conform.nvim",
     opts = {
+      -- Pin oxfmt to the SecondBrain config so it never picks up parent project configs
+      formatters = {
+        oxfmt = {
+          command = "oxfmt",
+          args = { "--stdin-filepath", "$FILENAME", "-c", oxfmt_config },
+          stdin = true,
+        },
+      },
       formatters_by_ft = {
         ["javascript"] = biome_lsp_or_prettier,
         ["javascriptreact"] = { "eslint_d" },
@@ -43,10 +60,17 @@ return {
         ["json"] = { "biome" },
         ["jsonc"] = { "biome" },
         ["yaml"] = { "biome" },
-        ["markdown"] = { "biome" },
+        ["markdown"] = function(bufnr)
+          if in_secondbrain(bufnr) then return { "oxfmt" } end
+          return { "biome" }
+        end,
         ["markdown.mdx"] = { "biome" },
         ["graphql"] = { "biome" },
         ["handlebars"] = { "biome" },
+        ["sh"] = function(bufnr)
+          if in_secondbrain(bufnr) then return { "oxfmt" } end
+          return {}
+        end,
       },
     },
   },
@@ -65,7 +89,13 @@ return {
       vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
         group = lint_augroup,
         callback = function()
-          lint.try_lint()
+          local bufnr = vim.api.nvim_get_current_buf()
+          local ft = vim.bo[bufnr].filetype
+          if in_secondbrain(bufnr) and (ft == "markdown" or ft == "sh") then
+            lint.try_lint({ "oxlint" })
+          else
+            lint.try_lint()
+          end
         end,
       })
     end,
@@ -77,6 +107,8 @@ return {
       ensure_installed = {
         "biome",
         "eslint_d",
+        "oxlint",
+        "oxfmt",
       },
     },
   },
