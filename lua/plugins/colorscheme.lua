@@ -13,6 +13,16 @@ return {
   { "yonlu/omni.vim" },
 
   {
+    "rose-pine/neovim",
+    name = "rose-pine",
+    opts = {
+      highlight_groups = {
+        Cursor = { fg = "base", bg = "pine" },
+      },
+    },
+  },
+
+  {
     "LazyVim/LazyVim",
     opts = {
       colorscheme = "omni",
@@ -30,7 +40,7 @@ return {
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "kanagawa-lotus",
+      colorscheme = "rose-pine-dawn",
     },
   },
 }

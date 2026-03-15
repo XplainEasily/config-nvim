@@ -17,7 +17,7 @@ return {
     workspaces = {
       {
         name = "second-brain",
-        path = "~/SecondBrain",
+        path = "~/Mon_Drive/SecondBrain",
       },
     },
 
@@ -59,7 +59,8 @@ return {
       local date = os.date("%Y-%m-%d")
       local suffix = ""
       if title ~= nil then
-        suffix = title:gsub(" ", "-"):gsub("[^A-Za-z0-9-àâéèêëïîôùûüÿçÀÂÉÈÊËÏÎÔÙÛÜŸÇ]", ""):lower()
+        suffix =
+          title:gsub(" ", "-"):gsub("[^A-Za-z0-9-àâéèêëïîôùûüÿçÀÂÉÈÊËÏÎÔÙÛÜŸÇ]", ""):lower()
       else
         suffix = tostring(os.time())
       end
@@ -68,41 +69,95 @@ return {
   },
 
   keys = {
-    { "<leader>oo",  "<cmd>Obsidian open<CR>",            desc = "Ouvrir dans Obsidian" },
-    { "<leader>on",  "<cmd>Obsidian new<CR>",              desc = "Nouvelle note" },
-    { "<leader>od",  "<cmd>Obsidian today<CR>",            desc = "Note du jour" },
-    { "<leader>oy",  "<cmd>Obsidian yesterday<CR>",        desc = "Note d'hier" },
-    { "<leader>os",  "<cmd>Obsidian search<CR>",           desc = "Rechercher" },
-    { "<leader>oq",  "<cmd>Obsidian quick_switch<CR>",     desc = "Quick switch" },
-    { "<leader>ot",  "<cmd>Obsidian tags<CR>",             desc = "Chercher par tag" },
-    { "<leader>ob",  "<cmd>Obsidian backlinks<CR>",        desc = "Voir backlinks" },
-    { "<leader>ol",  "<cmd>Obsidian links<CR>",            desc = "Voir liens sortants" },
-    { "<leader>om",  "<cmd>Obsidian template<CR>",         desc = "Insérer template" },
-    { "<leader>op",  "<cmd>Obsidian paste_img<CR>",        desc = "Coller une image" },
-    { "gf",          "<cmd>Obsidian follow_link<CR>",      desc = "Follow link" },
-    { "<leader>ti",  "<cmd>Obsidian toggle_checkbox<CR>",  desc = "Toggle checkbox" },
+    { "<leader>oo", "<cmd>Obsidian open<CR>", desc = "Ouvrir dans Obsidian" },
+    { "<leader>on", "<cmd>Obsidian new<CR>", desc = "Nouvelle note" },
+    { "<leader>od", "<cmd>Obsidian today<CR>", desc = "Note du jour" },
+    { "<leader>oy", "<cmd>Obsidian yesterday<CR>", desc = "Note d'hier" },
+    { "<leader>os", "<cmd>Obsidian search<CR>", desc = "Rechercher" },
+    { "<leader>oq", "<cmd>Obsidian quick_switch<CR>", desc = "Quick switch" },
+    { "<leader>ot", "<cmd>Obsidian tags<CR>", desc = "Chercher par tag" },
+    { "<leader>ob", "<cmd>Obsidian backlinks<CR>", desc = "Voir backlinks" },
+    { "<leader>ol", "<cmd>Obsidian links<CR>", desc = "Voir liens sortants" },
+    { "<leader>om", "<cmd>Obsidian template<CR>", desc = "Insérer template" },
+    { "<leader>op", "<cmd>Obsidian paste_img<CR>", desc = "Coller une image" },
+    { "gf", "<cmd>Obsidian follow_link<CR>", desc = "Follow link" },
+    { "<leader>ti", "<cmd>Obsidian toggle_checkbox<CR>", desc = "Toggle checkbox" },
     -- format title: strip date prefix and replace dashes with spaces (cursor must be on title line)
-    { "<leader>of",  ":s/\\(# \\)[^_]*_/\\1/ | s/-/ /g<CR>", desc = "Format titre" },
+    { "<leader>of", ":s/\\(# \\)[^_]*_/\\1/ | s/-/ /g<CR>", desc = "Format titre" },
     -- move current note to notesToTidyUp for later review
-    { "<leader>ok", function()
+    {
+      "<leader>ok",
+      function()
         local path = vim.fn.expand("%:p")
-        vim.cmd("silent !mv '" .. path .. "' ~/SecondBrain/notesToTidyUp/")
+        vim.cmd("silent !mv '" .. path .. "' ~/Mon_Drive/SecondBrain/notesToTidyUp/")
         vim.cmd("bd")
-      end, desc = "Déplacer vers notesToTidyUp" },
+      end,
+      desc = "Déplacer vers notesToTidyUp",
+    },
     -- delete current note
-    { "<leader>odd", function()
+    {
+      "<leader>odd",
+      function()
         local path = vim.fn.expand("%:p")
         vim.fn.delete(path)
         vim.cmd("bd")
-      end, desc = "Supprimer la note" },
+      end,
+      desc = "Supprimer la note",
+    },
     -- live grep across the entire vault regardless of cwd
-    { "<leader>oz", function()
-        Snacks.picker.grep({ cwd = vim.fn.expand("~/SecondBrain") })
-      end, desc = "Grep vault" },
+    {
+      "<leader>oz",
+      function()
+        Snacks.picker.grep({ cwd = vim.fn.expand("~/Mon_Drive/SecondBrain") })
+      end,
+      desc = "Grep vault",
+    },
     -- run organize script: moves notes from notesToTidyUp to PARA folders by tag
-    { "<leader>og", function()
-        vim.cmd("silent !bash ~/SecondBrain/scripts/organize.sh")
-        vim.notify("Vault organisé", vim.log.levels.INFO)
-      end, desc = "Organiser le vault" },
+    {
+      "<leader>og",
+      function()
+        local output = vim.fn.system("zsh ~/Mon_Drive/SecondBrain/scripts/organize.sh")
+        vim.notify(output, vim.log.levels.INFO, { title = "Vault organisé" })
+      end,
+      desc = "Organiser le vault",
+    },
+    -- run finance-sync script: update totals in depense/budget frontmatter
+    {
+      "<leader>oe",
+      function()
+        local script = vim.fn.expand("~/Mon_Drive/SecondBrain/scripts/finance-sync.sh")
+        local output = vim.fn.system("zsh " .. script)
+        local ok = vim.v.shell_error == 0
+        -- reload current buffer so frontmatter changes are visible
+        vim.cmd("checktime")
+        vim.notify(output, ok and vim.log.levels.INFO or vim.log.levels.ERROR, { title = "Finance sync" })
+      end,
+      desc = "Sync finances",
+    },
+    -- create/open monthly expense note
+    {
+      "<leader>oF",
+      function()
+        local mois_fr = {
+          "janvier", "fevrier", "mars", "avril", "mai", "juin",
+          "juillet", "aout", "septembre", "octobre", "novembre", "decembre",
+        }
+        local y = os.date("%Y")
+        local m = tonumber(os.date("%m"))
+        local nom = mois_fr[m]
+        local filename = y .. "-" .. string.format("%02d", m) .. "-01_depenses-" .. nom .. ".md"
+        local vault = vim.fn.expand("~/Mon_Drive/SecondBrain")
+        local filepath = vault .. "/02-Areas/perso/finances/depenses/" .. filename
+        if vim.fn.filereadable(filepath) == 1 then
+          vim.cmd("edit " .. filepath)
+        else
+          vim.cmd("ObsidianNew " .. filename)
+          vim.cmd("ObsidianTemplate depense.md")
+          vim.cmd("silent !mv '" .. vault .. "/00-Inbox/" .. filename .. "' '" .. filepath .. "'")
+          vim.cmd("edit " .. filepath)
+        end
+      end,
+      desc = "Depenses du mois",
+    },
   },
 }
