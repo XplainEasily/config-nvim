@@ -104,6 +104,24 @@ return {
       end,
       desc = "Supprimer la note",
     },
+    -- open all inbox files as buffers for end-of-day triage
+    {
+      "<leader>oi",
+      function()
+        local inbox = vim.fn.expand("~/Mon_Drive/SecondBrain/00-Inbox")
+        local files = vim.fn.glob(inbox .. "/*.md", false, true)
+        if #files == 0 then
+          vim.notify("Inbox vide ✓", vim.log.levels.INFO, { title = "Inbox" })
+          return
+        end
+        for _, f in ipairs(files) do
+          vim.cmd("badd " .. vim.fn.fnameescape(f))
+        end
+        vim.cmd("edit " .. vim.fn.fnameescape(files[1]))
+        vim.notify(#files .. " note(s) dans l'inbox", vim.log.levels.INFO, { title = "Inbox" })
+      end,
+      desc = "Ouvrir inbox pour triage",
+    },
     -- live grep across the entire vault regardless of cwd
     {
       "<leader>oz",
