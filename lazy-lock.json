@@ -33,6 +33,7 @@
   "obsidian.nvim": { "branch": "main", "commit": "20432a5ca03d99a9d5ad51d362e19d9b832e46f0" },
   "omni.vim": { "branch": "master", "commit": "6c0f3015b1d6f2ae59c12cc380c629b965d3dc62" },
   "persistence.nvim": { "branch": "main", "commit": "b20b2a7887bd39c1a356980b45e03250f3dce49c" },
+  "pg_nvim": { "branch": "main", "commit": "213082d2e3ce6395f56c63d60afd09c9012fb43c" },
   "plenary.nvim": { "branch": "master", "commit": "b9fd5226c2f76c951fc8ed5923d85e4de065e509" },
   "render-markdown.nvim": { "branch": "main", "commit": "48b4175dbca8439d30c1f52231cbe5a712c8f9d9" },
   "rose-pine": { "branch": "main", "commit": "cf2a288696b03d0934da713d66c6d71557b5c997" },
